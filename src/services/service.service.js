@@ -1,29 +1,47 @@
-import axios from "axios";
-import { useAuth } from "../context/useAuth";
+import api from "./api";
+const API_URL = import.meta.env.VITE_POST_URL;
+// Note: VITE_POST_URL maps to /api/services based on our .env
 
-const API_URL = "http://localhost:5000/api/services";
+const getServices = async () => {
+    return await api.get(API_URL);
+};
 
-// Get auth token from local storage directly for service calls
-// (Or better, pass it from components. But trying to mimic professor's simpler style if possible)
-// Professor's PostService example passed 'data' but didn't show auth handling.
-// Assuming we need to add the header.
+const getServiceById = async (id) => {
+    return await api.get(API_URL + "/" + id);
+};
 
-const createService = async (serviceData, token) => {
-    try {
-        const config = {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-                'x-access-token': token,
-            },
-        };
-        return await axios.post(API_URL, serviceData, config);
-    } catch (error) {
-        return error.response;
-    }
+// Modified createService to match PostService pattern but for Services
+const createService = async (serviceData) => {
+    return await api.post(API_URL, serviceData, {
+        headers: {
+            "Content-Type": "multipart/form-data",
+        },
+    });
+};
+
+const updateService = async (id, serviceData) => {
+    // If updating with file, might need multipart/form-data, 
+    // but usually axios handles it if data is FormData.
+    // However, explicit header is safer if we sending FormData.
+    // If sending JSON, header should be application/json (default).
+    // Assuming FormData for update too as it has image.
+    return await api.put(`${API_URL}/${id}`, serviceData, {
+        headers: {
+            "Content-Type": "multipart/form-data",
+        }
+    });
+};
+
+const deleteService = async (id) => {
+    return await api.delete(`${API_URL}/${id}`);
 };
 
 const ServiceService = {
+    getServices,
+    getServiceById,
     createService,
+    updateService,
+    deleteService,
 };
 
 export default ServiceService;

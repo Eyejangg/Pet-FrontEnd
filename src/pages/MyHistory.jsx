@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useAuth } from '../context/useAuth';
+import { useAuth } from '../services/useAuth';
 import { format } from 'date-fns';
 import { Link } from 'react-router-dom';
 import Swal from 'sweetalert2';

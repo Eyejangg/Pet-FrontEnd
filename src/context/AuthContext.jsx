@@ -1,4 +1,5 @@
 import { createContext, useState, useEffect } from 'react';
+import TokenService from '../services/token.service';
 
 export const UserContext = createContext({});
 
@@ -7,21 +8,21 @@ export const UserContextProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const storedUser = localStorage.getItem('userInfo');
-        if (storedUser) {
-            setUserInfo(JSON.parse(storedUser));
+        const user = TokenService.getUser();
+        if (user) {
+            setUserInfo(user);
         }
         setLoading(false);
     }, []);
 
     const logIn = (userData) => {
         setUserInfo(userData);
-        localStorage.setItem('userInfo', JSON.stringify(userData));
+        // TokenService.setUser(userData); // Already called in AuthService.login
     };
 
     const logout = () => {
+        TokenService.removeUser();
         setUserInfo(null);
-        localStorage.removeItem('userInfo');
     };
 
     return (

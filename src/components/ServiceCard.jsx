@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { FaMapMarkerAlt, FaTag, FaTrash, FaUserCircle, FaPen } from 'react-icons/fa';
-import { useAuth } from '../context/useAuth';
+import { useAuth } from '../services/useAuth';
 import Swal from 'sweetalert2';
 import axios from 'axios';
 

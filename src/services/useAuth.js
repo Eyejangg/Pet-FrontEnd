@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { UserContext } from './AuthContext';
+import { UserContext } from '../context/AuthContext';
 
 // Hook to maintain compatibility with existing components using useAuth
 export const useAuth = () => {

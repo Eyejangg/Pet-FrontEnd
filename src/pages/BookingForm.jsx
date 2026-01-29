@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import Swal from 'sweetalert2';
-import { useAuth } from '../context/useAuth';
+import { useAuth } from '../services/useAuth';
 import { FaPaw, FaWeight, FaCalendarAlt, FaStickyNote, FaCheckCircle, FaDog, FaCat, FaQuestionCircle } from 'react-icons/fa';
 
 const BookingForm = () => {

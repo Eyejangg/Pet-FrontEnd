@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/useAuth';
+import { useAuth } from '../services/useAuth';
 import { FaSearch, FaCat } from 'react-icons/fa';
 
 const Navbar = () => {

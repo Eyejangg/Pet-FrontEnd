@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import Swal from 'sweetalert2';
-import { useAuth } from '../context/useAuth';
+import { useAuth } from '../services/useAuth';
 import ServiceService from '../services/service.service';
 import { useNavigate } from 'react-router-dom';
 import { FaPen, FaDollarSign, FaMapMarkerAlt, FaImage, FaPlus, FaFileAlt, FaCheck } from 'react-icons/fa';
@@ -74,7 +74,7 @@ const CreateService = () => {
         data.append('image', image);
 
         // Use ServiceService
-        const response = await ServiceService.createService(data, user.token || user.accessToken);
+        const response = await ServiceService.createService(data);
 
         if (response?.status === 201) {
             Swal.fire('สำเร็จ', 'สร้างประกาศบริการเรียบร้อยแล้ว!', 'success').then(() => {

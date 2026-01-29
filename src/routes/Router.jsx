@@ -9,7 +9,7 @@ import CreateService from "../pages/CreateService";
 import EditService from "../pages/EditService";
 import Layout from "../components/Layout"; // We will create this
 import { Navigate } from "react-router-dom";
-import { useAuth } from "../context/useAuth";
+import { useAuth } from "../services/useAuth";
 
 // Wrapper to check authentication for protected routes
 const ProtectedRoute = ({ children }) => {

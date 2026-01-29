@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import Swal from 'sweetalert2';
-import { useAuth } from '../context/useAuth';
+import { useAuth } from '../services/useAuth';
+import ServiceService from '../services/service.service';
 import { useNavigate, useParams } from 'react-router-dom';
 import { FaPen, FaDollarSign, FaMapMarkerAlt, FaImage, FaSave, FaFileAlt, FaCheck } from 'react-icons/fa';
 
@@ -93,14 +94,7 @@ const EditService = () => {
         }
 
         try {
-            const config = {
-                headers: {
-                    'Content-Type': 'multipart/form-data',
-                    'x-access-token': user.token || user.accessToken,
-                },
-            };
-
-            await axios.put(`http://localhost:5000/api/services/${id}`, data, config);
+            await ServiceService.updateService(id, data);
 
             Swal.fire('สำเร็จ', 'แก้ไขข้อมูลเรียบร้อยแล้ว!', 'success');
             navigate('/');

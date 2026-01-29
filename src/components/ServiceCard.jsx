@@ -1,12 +1,14 @@
 import { Link } from 'react-router-dom';
-import { FaMapMarkerAlt, FaTag, FaTrash } from 'react-icons/fa';
-import { useAuth } from '../context/AuthContext';
+import { FaMapMarkerAlt, FaTag, FaTrash, FaUserCircle, FaPen } from 'react-icons/fa';
+import { useAuth } from '../context/useAuth';
 import Swal from 'sweetalert2';
 import axios from 'axios';
 
 const ServiceCard = ({ service, refreshServices }) => {
     const { user } = useAuth();
-    const isOwner = user && service.providerId && (service.providerId._id === user._id || service.providerId === user._id);
+    const userId = user?.id || user?._id;
+    const providerId = service.providerId?._id || service.providerId;
+    const isOwner = user && providerId && (providerId === userId);
     const isAdmin = user && user.role === 'admin';
 
     const handleDelete = async () => {
@@ -24,7 +26,7 @@ const ServiceCard = ({ service, refreshServices }) => {
         if (result.isConfirmed) {
             try {
                 const config = {
-                    headers: { Authorization: `Bearer ${user.token}` }
+                    headers: { 'x-access-token': user.token || user.accessToken }
                 };
                 await axios.delete(`http://localhost:5000/api/services/${service._id}`, config);
                 Swal.fire('ลบสำเร็จ!', 'โพสต์ของคุณถูกลบเรียบร้อยแล้ว', 'success');
@@ -38,73 +40,94 @@ const ServiceCard = ({ service, refreshServices }) => {
     };
 
     return (
-        <div className="card w-full bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300">
-            <figure className="relative aspect-video overflow-hidden bg-gray-100">
+        <div className="card w-full bg-base-100 shadow-xl hover:shadow-2xl transition-all duration-300 rounded-2xl overflow-hidden group">
+            {/* Image Section */}
+            <figure className="relative aspect-video w-full overflow-hidden">
                 <img
                     src={service.image}
                     alt={service.title}
-                    className="w-full h-full object-cover transition-transform duration-700 hover:scale-110"
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                 />
-                <div className="absolute top-4 right-4 badge badge-primary font-bold p-4 shadow-lg border-none">
+                {/* Price Badge */}
+                <div className="absolute top-3 right-3 bg-indigo-600 text-white font-bold py-1 px-3 rounded-lg shadow-md text-sm">
                     {service.price} ฿/วัน
                 </div>
             </figure>
-            <div className="card-body p-5">
-                <div className="flex justify-between items-start mb-2">
-                    <h2 className="card-title text-lg font-bold line-clamp-1" title={service.title}>{service.title}</h2>
-                </div>
 
-                <div className="flex flex-wrap gap-1 mb-3">
+            {/* Content Body */}
+            <div className="card-body p-5 gap-3">
+                {/* Title */}
+                <h2 className="card-title text-xl font-bold text-gray-800 line-clamp-1" title={service.title}>
+                    {service.title}
+                </h2>
+
+                {/* Tags */}
+                <div className="flex flex-wrap gap-2">
                     {service.serviceTypes && service.serviceTypes.length > 0 ? (
-                        service.serviceTypes.map((type, index) => (
-                            <div key={index} className="badge badge-outline gap-1 text-[10px] sm:text-xs">
-                                <FaTag /> {type}
+                        service.serviceTypes.slice(0, 3).map((type, index) => (
+                            <div key={index} className="badge badge-ghost badge-sm gap-1 text-xs text-indigo-600 font-medium">
+                                <FaTag className="text-[10px]" /> {type}
                             </div>
                         ))
                     ) : (
-                        <div className="badge badge-outline gap-1 text-xs">
-                            <FaTag /> {service.category}
+                        <div className="badge badge-ghost badge-sm gap-1 text-xs text-indigo-600 font-medium">
+                            <FaTag className="text-[10px]" /> {service.category}
                         </div>
                     )}
-
-                    {service.location && (
-                        <div className="badge badge-ghost gap-1 text-xs text-secondary">
-                            <FaMapMarkerAlt /> {service.location}
-                        </div>
+                    {/* Show +N if more than 3 tags */}
+                    {service.serviceTypes && service.serviceTypes.length > 3 && (
+                        <div className="badge badge-ghost badge-sm text-xs">+{service.serviceTypes.length - 3}</div>
                     )}
                 </div>
 
-                <div className="text-xs text-gray-500 mb-2 font-medium">
-                    ผู้โพสต์: <span className="text-primary">{service.providerId?.username || 'ไม่ระบุ'}</span>
-                </div>
+                {/* Location */}
+                {service.location && (
+                    <div className="flex items-center gap-1 text-rose-500 text-sm font-medium">
+                        <FaMapMarkerAlt />
+                        <span>{service.location}</span>
+                    </div>
+                )}
 
-                <p className="text-sm text-gray-500 line-clamp-2 mb-4 h-10">
+                {/* Description */}
+                <p className="text-gray-500 text-sm line-clamp-2 h-10 leading-relaxed">
                     {service.description}
                 </p>
 
-                <div className="card-actions justify-between items-center mt-4 border-t pt-4">
+                {/* Poster Info */}
+                <div className="flex items-center gap-2 mt-1 pt-3 border-t border-base-200">
+                    <FaUserCircle className="text-2xl text-gray-300" />
+                    <span className="text-sm text-gray-400 font-medium">
+                        User: <span className="text-gray-600">{service.providerId?.username || 'ไม่ระบุ'}</span>
+                    </span>
+                </div>
+
+                {/* Footer Actions */}
+                <div className="card-actions mt-2">
                     {(isOwner || isAdmin) ? (
                         <div className="flex gap-2 w-full">
                             <Link
                                 to={`/edit-service/${service._id}`}
-                                className="btn btn-warning btn-sm btn-outline flex-1"
+                                className="btn btn-ghost btn-sm text-amber-500 hover:bg-amber-50 flex-1 font-normal"
                             >
-                                แก้ไข
+                                <FaPen className="text-xs" /> แก้ไข
                             </Link>
                             <button
                                 onClick={handleDelete}
-                                className="btn btn-error btn-sm btn-outline flex-1"
+                                className="btn btn-ghost btn-sm text-red-500 hover:bg-red-50 flex-1 font-normal"
                             >
-                                <FaTrash /> ลบ
+                                <FaTrash className="text-xs" /> ลบ
                             </button>
                         </div>
                     ) : (
                         service.isBooked ? (
-                            <button className="btn btn-disabled w-full">
-                                ถูกจองแล้ว (Unavailable)
+                            <button className="btn btn-disabled w-full bg-gray-200 text-gray-400 font-bold rounded-xl">
+                                🚫 ไม่ว่าง (จองแล้ว)
                             </button>
                         ) : (
-                            <Link to={`/book/${service._id}`} className="btn btn-primary btn-sm w-full">
+                            <Link
+                                to={`/book/${service._id}`}
+                                className="btn w-full border-none bg-gradient-to-r from-pink-500 to-rose-500 hover:from-pink-600 hover:to-rose-600 text-white font-bold rounded-xl shadow-md hover:shadow-lg transition-all"
+                            >
                                 จองทันที
                             </Link>
                         )

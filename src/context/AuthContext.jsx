@@ -1,65 +1,33 @@
-import { createContext, useState, useContext, useEffect } from 'react';
-import axios from 'axios';
+import { createContext, useState, useEffect } from 'react';
 
-const AuthContext = createContext();
+export const UserContext = createContext({});
 
-export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
+export const UserContextProvider = ({ children }) => {
+    const [userInfo, setUserInfo] = useState(null);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        const userInfo = localStorage.getItem('userInfo');
-        if (userInfo) {
-            setUser(JSON.parse(userInfo));
+        const storedUser = localStorage.getItem('userInfo');
+        if (storedUser) {
+            setUserInfo(JSON.parse(storedUser));
         }
         setLoading(false);
     }, []);
 
-    const login = async (username, password) => {
-        try {
-            const { data } = await axios.post('http://localhost:5000/api/auth/login', {
-                username,
-                password,
-            });
-            setUser(data);
-            localStorage.setItem('userInfo', JSON.stringify(data));
-            return { success: true };
-        } catch (error) {
-            return {
-                success: false,
-                message: error.response?.data?.message || 'Login failed'
-            };
-        }
-    };
-
-    const register = async (username, password) => { // Removed email param
-        try {
-            const { data } = await axios.post('http://localhost:5000/api/auth/register', {
-                username,
-                password,
-                // Email removed
-            });
-            setUser(data);
-            localStorage.setItem('userInfo', JSON.stringify(data));
-            return { success: true };
-        } catch (error) {
-            return {
-                success: false,
-                message: error.response?.data?.message || 'Registration failed'
-            };
-        }
+    const logIn = (userData) => {
+        setUserInfo(userData);
+        localStorage.setItem('userInfo', JSON.stringify(userData));
     };
 
     const logout = () => {
-        setUser(null);
+        setUserInfo(null);
         localStorage.removeItem('userInfo');
     };
 
     return (
-        <AuthContext.Provider value={{ user, login, register, logout, loading }}>
+        <UserContext.Provider value={{ userInfo, setUserInfo, logIn, logout, loading }}>
             {children}
-        </AuthContext.Provider>
+        </UserContext.Provider>
     );
 };
 
-export const useAuth = () => useContext(AuthContext);

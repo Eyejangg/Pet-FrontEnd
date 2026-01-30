@@ -1,10 +1,9 @@
 import { useState, useEffect } from 'react';
-
 import Swal from 'sweetalert2';
 import { useAuth } from '../services/useAuth';
 import PostService from '../services/post.service';
 import { useNavigate, useParams } from 'react-router-dom';
-import { FaPen, FaDollarSign, FaMapMarkerAlt, FaImage, FaSave, FaFileAlt, FaCheck } from 'react-icons/fa';
+import { FaPen, FaDollarSign, FaMapMarkerAlt, FaImage, FaCloudUploadAlt, FaFileAlt, FaCheck } from 'react-icons/fa';
 
 const EditService = () => {
     const { id } = useParams();
@@ -36,23 +35,45 @@ const EditService = () => {
     useEffect(() => {
         const fetchService = async () => {
             try {
-                const { data } = await PostService.getById(id);
-                setFormData({
-                    title: data.title,
-                    serviceTypes: data.serviceTypes || [data.category] || [], // Fallback for old data
-                    price: data.price,
-                    location: data.location,
-                    description: data.description
-                });
-                setPreviewUrl(data.image);
-                setLoading(false);
+                const response = await PostService.getById(id);
+                if (response.status === 200) {
+                    const data = response.data;
+                    const authorId = data?.providerId?._id || data?.providerId;
+
+                    if (user?.id !== authorId) {
+                        Swal.fire({
+                            title: "ไม่ได้รับอนุญาต",
+                            text: "คุณสามารถแก้ไขได้เฉพาะบริการที่สร้างด้วยตัวเองเท่านั้น",
+                            icon: "error",
+                        }).then(() => {
+                            navigate("/");
+                        });
+                        return;
+                    }
+
+                    setFormData({
+                        title: data.title,
+                        serviceTypes: data.serviceTypes || [data.category] || [],
+                        price: data.price,
+                        location: data.location,
+                        description: data.description
+                    });
+                    setPreviewUrl(data.image);
+                }
             } catch (error) {
-                Swal.fire('Error', 'ไม่สามารถดึงข้อมูลได้', 'error');
-                navigate('/');
+                Swal.fire({
+                    title: "ข้อผิดพลาด",
+                    text: error?.response?.data?.message || error.message,
+                    icon: "error",
+                }).then(() => {
+                    navigate("/");
+                });
+            } finally {
+                setLoading(false);
             }
         };
         fetchService();
-    }, [id, navigate]);
+    }, [id, navigate, user]);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -84,23 +105,34 @@ const EditService = () => {
 
         setSubmitting(true);
         const data = new FormData();
-        data.append('title', formData.title);
-        data.append('serviceTypes', JSON.stringify(formData.serviceTypes));
-        data.append('price', formData.price);
-        data.append('location', formData.location);
-        data.append('description', formData.description);
+        data.set('title', formData.title);
+        data.set('serviceTypes', JSON.stringify(formData.serviceTypes));
+        data.set('price', formData.price);
+        data.set('location', formData.location);
+        data.set('description', formData.description);
         if (image) {
-            data.append('image', image);
+            data.set('image', image);
         }
 
         try {
-            await PostService.updatePost(id, data);
+            const response = await PostService.updatePost(id, data);
 
-            Swal.fire('สำเร็จ', 'แก้ไขข้อมูลเรียบร้อยแล้ว!', 'success');
-            navigate('/');
+            if (response.status === 200) {
+                Swal.fire({
+                    title: 'สำเร็จ',
+                    text: 'แก้ไขข้อมูลเรียบร้อยแล้ว!',
+                    icon: 'success'
+                }).then(() => {
+                    navigate('/');
+                });
+            }
         } catch (error) {
             console.error('Update Error:', error);
-            Swal.fire('ข้อผิดพลาด', 'เกิดข้อผิดพลาดในการแก้ไข', 'error');
+            Swal.fire({
+                title: 'ข้อผิดพลาด',
+                text: error?.response?.data?.message || 'เกิดข้อผิดพลาดในการแก้ไข',
+                icon: 'error'
+            });
         } finally {
             setSubmitting(false);
         }
@@ -109,35 +141,32 @@ const EditService = () => {
     if (loading) return <div className="text-center mt-20"><span className="loading loading-spinner loading-lg text-primary"></span></div>;
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-purple-50 via-pink-50 to-white py-12 px-4 font-sans">
-            <div className="max-w-2xl mx-auto bg-white rounded-3xl shadow-xl overflow-hidden">
+        <div className="min-h-screen bg-rose-50 py-12 px-4 font-sans flex items-center justify-center">
+            <div className="card w-full max-w-2xl bg-white shadow-xl rounded-3xl overflow-hidden border border-rose-100">
 
                 {/* Header */}
-                <div className="bg-purple-50 p-8 text-center border-b border-purple-100">
-                    <div className="inline-block px-3 py-1 bg-pink-100 text-pink-600 rounded-full text-xs font-bold tracking-wide mb-2">
-                        EDIT SERVICE
-                    </div>
-                    <h2 className="text-3xl font-extrabold text-gray-800 mb-2">แก้ไขบริการ</h2>
-                    <p className="text-gray-500">อัปเดตข้อมูลบริการของคุณเพื่อให้ลูกค้าได้รับข้อมูลที่ถูกต้อง</p>
+                <div className="text-center pt-8 pb-4 bg-white">
+                    <h2 className="text-2xl font-bold text-gray-800">Edit Your Pet Service</h2>
+                    <p className="text-gray-500 text-sm mt-1">Update your service details for loving pet owners.</p>
                 </div>
 
-                <div className="p-8">
-                    <form onSubmit={handleSubmit} className="space-y-6">
+                <div className="card-body p-8 pt-2">
+                    <form onSubmit={handleSubmit} className="space-y-5">
 
                         {/* Title */}
                         <div className="form-control w-full">
                             <label className="label">
-                                <span className="label-text font-bold text-gray-700">ชื่อบริการ (หัวข้อ)</span>
+                                <span className="label-text font-bold text-gray-700">Service Title</span>
                             </label>
                             <div className="relative">
                                 <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
-                                    <FaPen />
+                                    <FaFileAlt />
                                 </span>
                                 <input
                                     type="text"
                                     name="title"
-                                    placeholder="เช่น รับฝากเลี้ยงน้องแมว คอนโดหรู..."
-                                    className="input input-bordered w-full pl-10 focus:border-rose-400 focus:ring-1 focus:ring-rose-400 rounded-xl"
+                                    placeholder="e.g. Luxury Cat Hotel"
+                                    className="input input-bordered w-full pl-10 focus:border-rose-400 focus:ring-1 focus:ring-rose-400 rounded-xl bg-white"
                                     value={formData.title}
                                     onChange={handleChange}
                                     required
@@ -148,28 +177,23 @@ const EditService = () => {
                         {/* Description */}
                         <div className="form-control">
                             <label className="label">
-                                <span className="label-text font-bold text-gray-700">รายละเอียดบริการ</span>
+                                <span className="label-text font-bold text-gray-700">Description</span>
                             </label>
-                            <div className="relative">
-                                <span className="absolute top-3 left-3 text-gray-400">
-                                    <FaFileAlt />
-                                </span>
-                                <textarea
-                                    name="description"
-                                    className="textarea textarea-bordered h-32 w-full pl-10 focus:border-rose-400 focus:ring-1 focus:ring-rose-400 rounded-xl text-base"
-                                    placeholder="อธิบายรายละเอียดบริการ..."
-                                    value={formData.description}
-                                    onChange={handleChange}
-                                    required
-                                ></textarea>
-                            </div>
+                            <textarea
+                                name="description"
+                                className="textarea textarea-bordered h-32 w-full p-4 focus:border-rose-400 focus:ring-1 focus:ring-rose-400 rounded-xl text-base bg-white"
+                                placeholder="Describe your service..."
+                                value={formData.description}
+                                onChange={handleChange}
+                                required
+                            ></textarea>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             {/* Price */}
                             <div className="form-control w-full">
                                 <label className="label">
-                                    <span className="label-text font-bold text-gray-700">ราคา (บาท/วัน)</span>
+                                    <span className="label-text font-bold text-gray-700">Price (THB/Day)</span>
                                 </label>
                                 <div className="relative">
                                     <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
@@ -178,7 +202,8 @@ const EditService = () => {
                                     <input
                                         type="number"
                                         name="price"
-                                        className="input input-bordered w-full pl-10 focus:border-rose-400 focus:ring-1 focus:ring-rose-400 rounded-xl"
+                                        placeholder="500"
+                                        className="input input-bordered w-full pl-10 focus:border-rose-400 focus:ring-1 focus:ring-rose-400 rounded-xl bg-white"
                                         value={formData.price}
                                         onChange={handleChange}
                                         required
@@ -186,31 +211,51 @@ const EditService = () => {
                                 </div>
                             </div>
 
-                            {/* Location */}
+                            {/* Image URL / Input */}
                             <div className="form-control w-full">
                                 <label className="label">
-                                    <span className="label-text font-bold text-gray-700">สถานที่ / พื้นที่ให้บริการ</span>
+                                    <span className="label-text font-bold text-gray-700">Image</span>
                                 </label>
                                 <div className="relative">
                                     <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
-                                        <FaMapMarkerAlt />
+                                        <FaImage />
                                     </span>
+                                    {/* Using file input but styled to look consistent */}
                                     <input
-                                        type="text"
-                                        name="location"
-                                        className="input input-bordered w-full pl-10 focus:border-rose-400 focus:ring-1 focus:ring-rose-400 rounded-xl"
-                                        value={formData.location}
-                                        onChange={handleChange}
-                                        required
+                                        type="file"
+                                        className="file-input file-input-bordered w-full pl-10 focus:border-rose-400 focus:ring-1 focus:ring-rose-400 rounded-xl bg-white text-gray-500"
+                                        accept="image/*"
+                                        onChange={handleFileChange}
                                     />
                                 </div>
+                            </div>
+                        </div>
+
+                        {/* Location */}
+                        <div className="form-control w-full">
+                            <label className="label">
+                                <span className="label-text font-bold text-gray-700">Location</span>
+                            </label>
+                            <div className="relative">
+                                <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                                    <FaMapMarkerAlt />
+                                </span>
+                                <input
+                                    type="text"
+                                    name="location"
+                                    placeholder="e.g. Bangkok, Ari"
+                                    className="input input-bordered w-full pl-10 focus:border-rose-400 focus:ring-1 focus:ring-rose-400 rounded-xl bg-white"
+                                    value={formData.location}
+                                    onChange={handleChange}
+                                    required
+                                />
                             </div>
                         </div>
 
                         {/* Service Types (Pills) */}
                         <div className="form-control">
                             <label className="label">
-                                <span className="label-text font-bold text-gray-700">หมวดหมู่</span>
+                                <span className="label-text font-bold text-gray-700">Category</span>
                             </label>
                             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
                                 {availableServices.map((service) => {
@@ -220,70 +265,47 @@ const EditService = () => {
                                             key={service}
                                             type="button"
                                             onClick={() => toggleServiceType(service)}
-                                            className={`btn btn-sm h-auto py-2 rounded-lg capitalize border transition-all ${isSelected
-                                                ? 'bg-rose-400 hover:bg-rose-500 text-white border-rose-400 shadow-md'
-                                                : 'bg-white hover:bg-gray-50 text-gray-600 border-gray-200'
+                                            className={`btn btn-sm h-auto py-2 rounded-xl capitalize border transition-all shadow-sm ${isSelected
+                                                ? 'bg-rose-400 hover:bg-rose-500 text-white border-rose-400'
+                                                : 'bg-white hover:bg-gray-50 text-gray-600 border-gray-200 hover:border-rose-300'
                                                 }`}
                                         >
                                             {isSelected && <FaCheck className="mr-1 text-xs" />}
-                                            {serviceLabels[service]}
+                                            {serviceLabels[service] || service}
                                         </button>
                                     );
                                 })}
                             </div>
                         </div>
 
-                        {/* Image Upload & Preview */}
+                        {/* Preview Box */}
                         <div className="form-control">
                             <label className="label">
-                                <span className="label-text font-bold text-gray-700">เปลี่ยนรูปปก (เฉพาะกรณีต้องการเปลี่ยน)</span>
+                                <span className="label-text font-bold text-gray-700">Preview</span>
                             </label>
-
-                            {/* File Input */}
-                            <div className="flex items-center gap-2 mb-4">
-                                <input
-                                    type="file"
-                                    className="file-input file-input-bordered file-input-ghost w-full rounded-xl text-gray-500"
-                                    accept="image/*"
-                                    onChange={handleFileChange}
-                                />
-                            </div>
-
-                            {/* Preview Box */}
-                            <div className="p-4 bg-gray-50 rounded-2xl border border-dashed border-gray-300 text-center">
+                            <div className="w-full h-48 bg-gray-50 rounded-2xl border border-dashed border-gray-300 overflow-hidden flex items-center justify-center">
                                 {previewUrl ? (
-                                    <div className="relative aspect-video w-full rounded-xl overflow-hidden shadow-sm">
-                                        <img
-                                            src={previewUrl}
-                                            alt="Preview"
-                                            className="w-full h-full object-cover"
-                                        />
-                                    </div>
+                                    <img
+                                        src={previewUrl}
+                                        alt="Preview"
+                                        className="w-full h-full object-cover"
+                                    />
                                 ) : (
-                                    <div className="flex flex-col items-center justify-center py-8 text-gray-400">
-                                        <FaImage className="text-4xl mb-2" />
-                                        <span className="text-sm">Image preview will appear here</span>
+                                    <div className="text-gray-300 flex flex-col items-center">
+                                        <FaImage className="text-3xl mb-2" />
+                                        <span className="text-sm">No image selected</span>
                                     </div>
                                 )}
                             </div>
                         </div>
 
                         {/* Action Buttons */}
-                        <div className="pt-4 flex gap-4">
-                            <button
-                                type="button"
-                                onClick={() => navigate('/')}
-                                className="btn btn-ghost text-gray-500 hover:bg-gray-100 rounded-xl flex-1"
-                            >
-                                ยกเลิก
-                            </button>
-                            <button
-                                type="submit"
-                                className={`btn border-none bg-gradient-to-r from-rose-400 to-pink-500 hover:from-rose-500 hover:to-pink-600 text-white rounded-xl flex-[2] shadow-lg ${submitting ? 'loading' : ''}`}
-                            >
-                                <FaSave className="mr-2" /> บันทึกการแก้ไข
-                            </button>
-                        </div>
+                        <button
+                            type="submit"
+                            className={`btn btn-block border-none bg-gradient-to-r from-rose-400 to-pink-500 hover:from-rose-500 hover:to-pink-600 text-white rounded-2xl shadow-lg text-lg h-12 mt-4 ${submitting ? 'loading' : ''}`}
+                        >
+                            <FaCloudUploadAlt className="mr-2 text-xl" /> Update Service
+                        </button>
                     </form>
                 </div>
             </div>

@@ -25,7 +25,7 @@ const Navbar = () => {
         <div className="navbar bg-base-100 shadow-md px-4 sticky top-0 z-50 justify-between">
             <div className="flex-none">
                 <Link to="/" className="btn btn-ghost text-2xl text-pink-500 font-bold flex items-center gap-2 hover:bg-transparent">
-                    <FaCat className="text-3xl" /> Meaw Meal
+                    <FaCat className="text-3xl" /> PetHub
                 </Link>
             </div>
 

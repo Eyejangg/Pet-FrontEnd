@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-
 import Swal from 'sweetalert2';
 import { useAuth } from '../services/useAuth';
 import PostService from '../services/post.service';
@@ -91,6 +90,21 @@ const BookingForm = () => {
             });
         } finally {
             setLoading(false);
+        }
+    };
+
+    const handleDateChange = (e) => {
+        const selected = e.target.value;
+        if (unavailableDates.includes(selected)) {
+            Swal.fire({
+                icon: 'error',
+                title: 'วันที่นี้ไม่ว่าง',
+                text: 'ขออภัย วันที่นี้มีการจองเต็มแล้ว',
+                confirmButtonColor: '#ec4899'
+            });
+            setFormData({ ...formData, bookingDate: '' });
+        } else {
+            setFormData({ ...formData, bookingDate: selected });
         }
     };
 
@@ -218,20 +232,7 @@ const BookingForm = () => {
                                     name="bookingDate"
                                     className="input input-bordered w-full focus:border-pink-400 focus:ring-1 focus:ring-pink-400 rounded-xl"
                                     value={formData.bookingDate}
-                                    onChange={(e) => {
-                                        const selected = e.target.value;
-                                        if (unavailableDates.includes(selected)) {
-                                            Swal.fire({
-                                                icon: 'error',
-                                                title: 'วันที่นี้ไม่ว่าง',
-                                                text: 'ขออภัย วันที่นี้มีการจองเต็มแล้ว',
-                                                confirmButtonColor: '#ec4899'
-                                            });
-                                            setFormData({ ...formData, bookingDate: '' });
-                                        } else {
-                                            setFormData({ ...formData, bookingDate: selected });
-                                        }
-                                    }}
+                                    onChange={handleDateChange}
                                     required
                                 />
                             </div>

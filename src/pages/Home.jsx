@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 
 import { Link, useSearchParams } from 'react-router-dom';
+import ServiceCard from '../components/ServiceCard';
 import PostService from '../services/post.service';
 import { FaPaw } from 'react-icons/fa';
 
@@ -11,7 +12,7 @@ const Home = () => {
     const [activeFilter, setActiveFilter] = useState('All');
     const [searchParams] = useSearchParams();
 
-    // Get search query from URL
+
     const searchQuery = searchParams.get('search') || '';
 
     const filters = ['All', 'Pet Boarding', 'Pet Sitting', 'Dog Walking', 'Grooming', 'Training'];
@@ -87,11 +88,11 @@ const Home = () => {
 
                     {/* Sub-headline */}
                     <p className="text-lg text-gray-500 mb-8 max-w-2xl mx-auto font-medium">
-                        ยินดีต้อนรับสู่ <span className="text-primary font-bold">Meaw Meal</span>.
+                        ยินดีต้อนรับสู่ <span className="text-primary font-bold"> PetHub </span>
                         แหล่งรวมพี่เลี้ยงสัตว์มืออาชีพ บริการฝากเลี้ยง พาสุนัขเดินเล่น และอาบน้ำตัดขน ใกล้บ้านคุณ
                     </p>
 
-                    {/* Old Search Bar & Stats Removed as per request */}
+
 
                 </div>
             </div>

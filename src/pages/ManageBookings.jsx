@@ -16,10 +16,17 @@ const ManageBookings = () => {
 
     const fetchBookings = async () => {
         try {
-            const { data } = await BookingService.getBookingsByProvider();
-            setBookings(data);
+            const response = await BookingService.getBookingsByProvider();
+            if (response.status === 200) {
+                setBookings(response.data);
+            }
         } catch (error) {
             console.error(error);
+            Swal.fire({
+                title: "ข้อผิดพลาด",
+                text: error?.response?.data?.message || error.message,
+                icon: "error",
+            });
         } finally {
             setLoading(false);
         }
@@ -31,19 +38,24 @@ const ManageBookings = () => {
 
     const handleStatusUpdate = async (id, newStatus) => {
         try {
-            await BookingService.updateBookingStatus(id, newStatus);
+            const response = await BookingService.updateBookingStatus(id, newStatus);
 
-            Swal.fire({
-                icon: 'success',
-                title: 'อัปเดตสถานะสำเร็จ',
-                text: `การจองถูกปรับเป็นสถานะ ${getStatusText(newStatus)}`,
-                timer: 1500,
-                showConfirmButton: false
-            });
-
-            fetchBookings(); // Refresh UI
+            if (response.status === 200) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'อัปเดตสถานะสำเร็จ',
+                    text: `การจองถูกปรับเป็นสถานะ ${getStatusText(newStatus)}`,
+                    timer: 1500,
+                    showConfirmButton: false
+                });
+                fetchBookings(); // Refresh UI
+            }
         } catch (error) {
-            Swal.fire('ข้อผิดพลาด', 'ไม่สามารถอัปเดตสถานะได้', 'error');
+            Swal.fire({
+                title: "ข้อผิดพลาด",
+                text: error?.response?.data?.message || error.message,
+                icon: "error",
+            });
         }
     };
 

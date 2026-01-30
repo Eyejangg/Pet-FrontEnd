@@ -26,10 +26,12 @@ const ServiceCard = ({ service, refreshServices }) => {
 
         if (result.isConfirmed) {
             try {
-                await PostService.deletePost(service._id);
-                Swal.fire('ลบสำเร็จ!', 'โพสต์ของคุณถูกลบเรียบร้อยแล้ว', 'success');
+                const response = await PostService.deletePost(service._id);
 
-                if (refreshServices) refreshServices();
+                if (response.status === 200) {
+                    Swal.fire('ลบสำเร็จ!', 'โพสต์ของคุณถูกลบเรียบร้อยแล้ว', 'success');
+                    if (refreshServices) refreshServices();
+                }
             } catch (error) {
                 const message = error.response?.data?.message || 'ไม่สามารถลบโพสต์ได้';
                 Swal.fire('ข้อผิดพลาด', message, 'error');

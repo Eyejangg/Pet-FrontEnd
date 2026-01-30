@@ -65,25 +65,45 @@ const CreateService = () => {
         }
 
         setLoading(true);
-        const data = new FormData();
-        data.append('title', formData.title);
-        data.append('serviceTypes', JSON.stringify(formData.serviceTypes));
-        data.append('price', formData.price);
-        data.append('location', formData.location);
-        data.append('description', formData.description);
-        data.append('image', image);
+        try {
+            const data = new FormData();
+            data.set('title', formData.title);
+            data.set('serviceTypes', JSON.stringify(formData.serviceTypes));
+            data.set('price', formData.price);
+            data.set('location', formData.location);
+            data.set('description', formData.description);
+            data.set('image', image);
 
-        // Use ServiceService
-        const response = await PostService.createPost(data);
+            // Use PostService
+            const response = await PostService.createPost(data);
 
-        if (response?.status === 201) {
-            Swal.fire('สำเร็จ', 'สร้างประกาศบริการเรียบร้อยแล้ว!', 'success').then(() => {
-                navigate('/');
+            if (response.status === 201) {
+                Swal.fire({
+                    title: 'สำเร็จ',
+                    text: 'สร้างประกาศบริการเรียบร้อยแล้ว!',
+                    icon: 'success'
+                }).then(() => {
+                    setFormData({
+                        title: '',
+                        serviceTypes: [],
+                        price: '',
+                        location: '',
+                        description: ''
+                    });
+                    setImage(null);
+                    setPreviewUrl('');
+                    navigate('/');
+                });
+            }
+        } catch (error) {
+            Swal.fire({
+                title: 'ข้อผิดพลาด',
+                text: error?.response?.data?.message || 'เกิดข้อผิดพลาดบางอย่าง',
+                icon: 'error'
             });
-        } else {
-            Swal.fire('ข้อผิดพลาด', response?.data?.message || 'เกิดข้อผิดพลาดบางอย่าง', 'error');
+        } finally {
+            setLoading(false);
         }
-        setLoading(false);
     };
 
     return (

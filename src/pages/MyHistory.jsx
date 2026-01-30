@@ -19,8 +19,10 @@ const MyHistory = () => {
         const fetchBookings = async () => {
             if (!user) return;
             try {
-                const { data } = await BookingService.getBookingsByUser();
-                setBookings(data);
+                const response = await BookingService.getBookingsByUser();
+                if (response.status === 200) {
+                    setBookings(response.data);
+                }
             } catch (error) {
                 console.error("Error fetching bookings:", error);
             } finally {
@@ -45,12 +47,16 @@ const MyHistory = () => {
 
         if (result.isConfirmed) {
             try {
-                await BookingService.cancelBooking(id);
+                const response = await BookingService.cancelBooking(id);
 
-                Swal.fire('ยกเลิกสำเร็จ!', 'การจองของคุณถูกยกเลิกแล้ว', 'success');
-                // Refresh list
-                const { data } = await BookingService.getBookingsByUser();
-                setBookings(data);
+                if (response.status === 200) {
+                    Swal.fire('ยกเลิกสำเร็จ!', 'การจองของคุณถูกยกเลิกแล้ว', 'success');
+                    // Refresh list
+                    const refreshResponse = await BookingService.getBookingsByUser();
+                    if (refreshResponse.status === 200) {
+                        setBookings(refreshResponse.data);
+                    }
+                }
             } catch (error) {
                 console.error('Cancel Error:', error);
                 const message = error.response?.data?.message || 'การยกเลิกขัดข้อง';

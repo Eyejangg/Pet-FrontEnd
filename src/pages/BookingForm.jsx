@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 
 import Swal from 'sweetalert2';
 import { useAuth } from '../services/useAuth';
-import ServiceService from '../services/service.service';
+import PostService from '../services/post.service';
 import BookingService from '../services/booking.service';
 import { FaPaw, FaWeight, FaCalendarAlt, FaStickyNote, FaCheckCircle, FaDog, FaCat, FaQuestionCircle } from 'react-icons/fa';
 
@@ -27,7 +27,7 @@ const BookingForm = () => {
     useEffect(() => {
         const fetchService = async () => {
             try {
-                const { data } = await ServiceService.getServiceById(serviceId);
+                const { data } = await PostService.getById(serviceId);
                 setService(data);
             } catch (error) {
                 console.error("Error fetching service:", error);

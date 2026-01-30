@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 
 import Swal from 'sweetalert2';
 import { useAuth } from '../services/useAuth';
-import ServiceService from '../services/service.service';
+import PostService from '../services/post.service';
 import { useNavigate, useParams } from 'react-router-dom';
 import { FaPen, FaDollarSign, FaMapMarkerAlt, FaImage, FaSave, FaFileAlt, FaCheck } from 'react-icons/fa';
 
@@ -36,7 +36,7 @@ const EditService = () => {
     useEffect(() => {
         const fetchService = async () => {
             try {
-                const { data } = await ServiceService.getServiceById(id);
+                const { data } = await PostService.getById(id);
                 setFormData({
                     title: data.title,
                     serviceTypes: data.serviceTypes || [data.category] || [], // Fallback for old data
@@ -94,7 +94,7 @@ const EditService = () => {
         }
 
         try {
-            await ServiceService.updateService(id, data);
+            await PostService.updatePost(id, data);
 
             Swal.fire('สำเร็จ', 'แก้ไขข้อมูลเรียบร้อยแล้ว!', 'success');
             navigate('/');

@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom';
 import { FaMapMarkerAlt, FaTag, FaTrash, FaUserCircle, FaPen } from 'react-icons/fa';
 import { useAuth } from '../services/useAuth';
-import ServiceService from '../services/service.service';
+import PostService from '../services/post.service';
 import Swal from 'sweetalert2';
 
 
@@ -26,7 +26,7 @@ const ServiceCard = ({ service, refreshServices }) => {
 
         if (result.isConfirmed) {
             try {
-                await ServiceService.deleteService(service._id);
+                await PostService.deletePost(service._id);
                 Swal.fire('ลบสำเร็จ!', 'โพสต์ของคุณถูกลบเรียบร้อยแล้ว', 'success');
 
                 if (refreshServices) refreshServices();

@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 
 import { Link, useSearchParams } from 'react-router-dom';
-import ServiceCard from '../components/ServiceCard';
-import ServiceService from '../services/service.service';
+import PostService from '../services/post.service';
 import { FaPaw } from 'react-icons/fa';
 
 const Home = () => {
@@ -27,7 +26,7 @@ const Home = () => {
 
     const fetchServices = async () => {
         try {
-            const { data } = await ServiceService.getServices();
+            const { data } = await PostService.getAllPosts();
             setServices(data);
             setFilteredServices(data);
         } catch (error) {
@@ -121,9 +120,6 @@ const Home = () => {
                     <h2 className="text-2xl font-bold text-gray-800">
                         บริการยอดนิยม
                     </h2>
-                    <Link to="/create-service" className="text-sm font-semibold text-primary hover:underline">
-                        + สร้างประกาศ
-                    </Link>
                 </div>
 
                 {/* Service Grid */}

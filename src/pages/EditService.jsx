@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+
 import Swal from 'sweetalert2';
 import { useAuth } from '../services/useAuth';
 import ServiceService from '../services/service.service';
@@ -36,7 +36,7 @@ const EditService = () => {
     useEffect(() => {
         const fetchService = async () => {
             try {
-                const { data } = await axios.get(`http://localhost:5000/api/services/${id}`);
+                const { data } = await ServiceService.getServiceById(id);
                 setFormData({
                     title: data.title,
                     serviceTypes: data.serviceTypes || [data.category] || [], // Fallback for old data

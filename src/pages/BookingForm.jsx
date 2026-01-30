@@ -1,8 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+
 import Swal from 'sweetalert2';
 import { useAuth } from '../services/useAuth';
+import ServiceService from '../services/service.service';
+import BookingService from '../services/booking.service';
 import { FaPaw, FaWeight, FaCalendarAlt, FaStickyNote, FaCheckCircle, FaDog, FaCat, FaQuestionCircle } from 'react-icons/fa';
 
 const BookingForm = () => {
@@ -25,7 +27,7 @@ const BookingForm = () => {
     useEffect(() => {
         const fetchService = async () => {
             try {
-                const { data } = await axios.get(`http://localhost:5000/api/services/${serviceId}`);
+                const { data } = await ServiceService.getServiceById(serviceId);
                 setService(data);
             } catch (error) {
                 console.error("Error fetching service:", error);
@@ -37,7 +39,7 @@ const BookingForm = () => {
     useEffect(() => {
         const fetchAvailability = async () => {
             try {
-                const { data } = await axios.get(`http://localhost:5000/api/bookings/service/${serviceId}/availability`);
+                const { data } = await BookingService.getBookingAvailability(serviceId);
                 const dates = data.map(date => new Date(date).toISOString().split('T')[0]);
                 setUnavailableDates(dates);
             } catch (error) {
@@ -62,20 +64,10 @@ const BookingForm = () => {
 
         setLoading(true);
         try {
-            const config = {
-                headers: {
-                    'x-access-token': user.token || user.accessToken,
-                },
-            };
-
-            await axios.post(
-                'http://localhost:5000/api/bookings',
-                {
-                    serviceId,
-                    ...formData,
-                },
-                config
-            );
+            await BookingService.createBooking({
+                serviceId,
+                ...formData,
+            });
 
             Swal.fire({
                 icon: 'success',

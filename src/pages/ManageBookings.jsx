@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+
 import { useAuth } from '../services/useAuth';
+import BookingService from '../services/booking.service';
 import Swal from 'sweetalert2';
 import { FaCheck, FaTimes, FaClipboardList, FaPaw, FaUser, FaClock, FaCheckCircle } from 'react-icons/fa';
 import { format } from 'date-fns';
@@ -15,10 +16,7 @@ const ManageBookings = () => {
 
     const fetchBookings = async () => {
         try {
-            const config = {
-                headers: { 'x-access-token': user.token || user.accessToken }
-            };
-            const { data } = await axios.get('http://localhost:5000/api/bookings/provider-bookings', config);
+            const { data } = await BookingService.getBookingsByProvider();
             setBookings(data);
         } catch (error) {
             console.error(error);
@@ -33,10 +31,7 @@ const ManageBookings = () => {
 
     const handleStatusUpdate = async (id, newStatus) => {
         try {
-            const config = {
-                headers: { 'x-access-token': user.token || user.accessToken }
-            };
-            await axios.put(`http://localhost:5000/api/bookings/${id}/status`, { status: newStatus }, config);
+            await BookingService.updateBookingStatus(id, newStatus);
 
             Swal.fire({
                 icon: 'success',

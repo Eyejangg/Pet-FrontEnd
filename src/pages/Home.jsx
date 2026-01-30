@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+
 import { Link, useSearchParams } from 'react-router-dom';
 import ServiceCard from '../components/ServiceCard';
+import ServiceService from '../services/service.service';
 import { FaPaw } from 'react-icons/fa';
 
 const Home = () => {
@@ -26,7 +27,7 @@ const Home = () => {
 
     const fetchServices = async () => {
         try {
-            const { data } = await axios.get('http://localhost:5000/api/services');
+            const { data } = await ServiceService.getServices();
             setServices(data);
             setFilteredServices(data);
         } catch (error) {

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
+
 import { useAuth } from '../services/useAuth';
+import BookingService from '../services/booking.service';
 import { format } from 'date-fns';
 import { Link } from 'react-router-dom';
 import Swal from 'sweetalert2';
@@ -18,12 +19,7 @@ const MyHistory = () => {
         const fetchBookings = async () => {
             if (!user) return;
             try {
-                const config = {
-                    headers: {
-                        'x-access-token': user.token || user.accessToken,
-                    },
-                };
-                const { data } = await axios.get('http://localhost:5000/api/bookings/my-bookings', config);
+                const { data } = await BookingService.getBookingsByUser();
                 setBookings(data);
             } catch (error) {
                 console.error("Error fetching bookings:", error);
@@ -49,14 +45,11 @@ const MyHistory = () => {
 
         if (result.isConfirmed) {
             try {
-                const config = {
-                    headers: { 'x-access-token': user.token || user.accessToken }
-                };
-                await axios.put(`http://localhost:5000/api/bookings/${id}/cancel`, {}, config);
+                await BookingService.cancelBooking(id);
 
                 Swal.fire('ยกเลิกสำเร็จ!', 'การจองของคุณถูกยกเลิกแล้ว', 'success');
                 // Refresh list
-                const { data } = await axios.get('http://localhost:5000/api/bookings/my-bookings', config);
+                const { data } = await BookingService.getBookingsByUser();
                 setBookings(data);
             } catch (error) {
                 console.error('Cancel Error:', error);

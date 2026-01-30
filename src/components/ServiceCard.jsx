@@ -1,8 +1,9 @@
 import { Link } from 'react-router-dom';
 import { FaMapMarkerAlt, FaTag, FaTrash, FaUserCircle, FaPen } from 'react-icons/fa';
 import { useAuth } from '../services/useAuth';
+import ServiceService from '../services/service.service';
 import Swal from 'sweetalert2';
-import axios from 'axios';
+
 
 const ServiceCard = ({ service, refreshServices }) => {
     const { user } = useAuth();
@@ -25,10 +26,7 @@ const ServiceCard = ({ service, refreshServices }) => {
 
         if (result.isConfirmed) {
             try {
-                const config = {
-                    headers: { 'x-access-token': user.token || user.accessToken }
-                };
-                await axios.delete(`http://localhost:5000/api/services/${service._id}`, config);
+                await ServiceService.deleteService(service._id);
                 Swal.fire('ลบสำเร็จ!', 'โพสต์ของคุณถูกลบเรียบร้อยแล้ว', 'success');
 
                 if (refreshServices) refreshServices();

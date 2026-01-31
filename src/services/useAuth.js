@@ -1,15 +1,16 @@
 import { useContext } from 'react';
 import { UserContext } from '../context/AuthContext';
 
-// Hook to maintain compatibility with existing components using useAuth
 export const useAuth = () => {
+    // ไปหา userContext 
     const context = useContext(UserContext);
 
-    // Map new context structure to old structure expected by components
-    // Old: { user, logout, loading, ... }
-    // New: { userInfo, logout, loading, ... }
+    // userContext มีข้อมูลอะไรบ้าง
+    // ตอนนี้ ใคร Login อยู่เหรอ
+    // มี Token เก็บไว้ไหม
+    // มีฟังก์ชัน Login/Logout ไหม
     return {
-        ...context,
-        user: context?.userInfo, // Alias userInfo to user
+        ...context, // นำทุกอย่างมา Login Logout 
+        user: context?.userInfo,
     };
 };

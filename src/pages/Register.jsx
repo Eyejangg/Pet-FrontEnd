@@ -4,7 +4,7 @@ import AuthService from "../services/authentication.service";
 import { UserContext } from "../context/AuthContext"; // Import UserContext
 import Swal from "sweetalert2";
 
-import { FaUser, FaLock, FaUserPlus } from "react-icons/fa";
+import { User, Lock, UserPlus } from 'lucide-react';
 
 const Register = () => {
     const [user, setUser] = useState({
@@ -61,7 +61,7 @@ const Register = () => {
                 <div className="card-body p-8">
                     <div className="text-center mb-6">
                         <div className="inline-flex justify-center items-center w-16 h-16 rounded-full bg-rose-100 mb-4">
-                            <FaUserPlus className="text-3xl text-rose-500" />
+                            <UserPlus className="text-3xl text-rose-500" />
                         </div>
                         <h2 className="text-3xl font-extrabold text-gray-800">สร้างบัญชีใหม่</h2>
                         <p className="text-gray-500 mt-2">เข้าร่วมชุมชน PetHub วันนี้</p>
@@ -74,7 +74,7 @@ const Register = () => {
                             </label>
                             <div className="relative">
                                 <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
-                                    <FaUser />
+                                    <User className="w-5 h-5" />
                                 </span>
                                 <input
                                     type="text"
@@ -93,7 +93,7 @@ const Register = () => {
                             </label>
                             <div className="relative">
                                 <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
-                                    <FaLock />
+                                    <Lock className="w-5 h-5" />
                                 </span>
                                 <input
                                     type="password"
@@ -110,7 +110,7 @@ const Register = () => {
                             className="btn w-full border-none bg-gradient-to-r from-rose-400 to-pink-500 hover:from-rose-500 hover:to-pink-600 text-white font-bold rounded-xl shadow-md mt-6 h-12 text-lg"
                             onClick={handleSubmit}
                         >
-                            <FaUserPlus className="mr-2" /> สมัครสมาชิก
+                            <UserPlus className="mr-2 w-5 h-5" /> สมัครสมาชิก
                         </button>
                     </form>
 

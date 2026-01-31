@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../services/useAuth';
 import BookingService from '../services/booking.service';
 import Swal from 'sweetalert2';
-import { FaCheck, FaTimes, FaClipboardList, FaPaw, FaUser, FaClock, FaCheckCircle } from 'react-icons/fa';
+import { Check, X, ClipboardList, PawPrint, User, Clock, CheckCircle } from 'lucide-react';
 import { format } from 'date-fns';
 
 import { th } from 'date-fns/locale';
@@ -48,7 +48,7 @@ const ManageBookings = () => {
                     timer: 1500,
                     showConfirmButton: false
                 });
-                fetchBookings(); // Refresh UI
+                fetchBookings(); 
             }
         } catch (error) {
             Swal.fire({
@@ -106,7 +106,7 @@ const ManageBookings = () => {
                             className={`cursor-pointer bg-white p-6 rounded-2xl shadow-md border transition-all hover:shadow-lg flex items-center gap-4 ${filter === 'All' ? 'border-purple-400 ring-1 ring-purple-400' : 'border-purple-50'}`}
                         >
                             <div className="p-4 bg-purple-100 text-purple-600 rounded-xl">
-                                <FaClipboardList className="text-xl" />
+                                <ClipboardList className="text-xl" />
                             </div>
                             <div>
                                 <h3 className="text-gray-500 text-sm font-bold uppercase">คำขอทั้งหมด</h3>
@@ -119,7 +119,7 @@ const ManageBookings = () => {
                             className={`cursor-pointer bg-white p-6 rounded-2xl shadow-md border transition-all hover:shadow-lg flex items-center gap-4 ${filter === 'Pending' ? 'border-yellow-400 ring-1 ring-yellow-400 t' : 'border-purple-50'}`}
                         >
                             <div className="p-4 bg-yellow-100 text-yellow-600 rounded-xl">
-                                <FaClock className="text-xl" />
+                                <Clock className="text-xl" />
                             </div>
                             <div>
                                 <h3 className="text-gray-500 text-sm font-bold uppercase">รอดำเนินการ</h3>
@@ -132,7 +132,7 @@ const ManageBookings = () => {
                             className={`cursor-pointer bg-white p-6 rounded-2xl shadow-md border transition-all hover:shadow-lg flex items-center gap-4 ${filter === 'Confirmed' ? 'border-blue-400 ring-1 ring-blue-400' : 'border-purple-50'}`}
                         >
                             <div className="p-4 bg-blue-100 text-blue-600 rounded-xl">
-                                <FaCheckCircle className="text-xl" />
+                                <CheckCircle className="text-xl" />
                             </div>
                             <div>
                                 <h3 className="text-gray-500 text-sm font-bold uppercase">งานที่กำลังมาถึง</h3>
@@ -195,10 +195,10 @@ const ManageBookings = () => {
                                             <td className="py-4">
                                                 <div className="flex flex-col">
                                                     <div className="flex items-center gap-1 font-bold text-gray-700">
-                                                        <FaUser className="text-xs text-gray-300" /> {booking.userId?.username}
+                                                        <User className="w-3 h-3 text-gray-300" /> {booking.userId?.username}
                                                     </div>
                                                     <div className="flex items-center gap-1 text-sm text-gray-500 mt-1">
-                                                        <FaPaw className="text-pink-300 text-xs" /> {booking.petName}
+                                                        <PawPrint className="text-pink-300 w-3 h-3" /> {booking.petName}
                                                         <span className="text-xs bg-gray-100 px-1.5 rounded text-gray-500">{booking.petType}</span>
                                                     </div>
                                                     {booking.specialNotes && (
@@ -231,14 +231,14 @@ const ManageBookings = () => {
                                                                 className="btn btn-sm btn-outline btn-success shadow-none hover:shadow-md hover:!text-black"
                                                                 title="รับงาน"
                                                             >
-                                                                <FaCheck /> รับงาน
+                                                                <Check className="w-4 h-4" /> รับงาน
                                                             </button>
                                                             <button
                                                                 onClick={() => handleStatusUpdate(booking._id, 'Rejected')}
                                                                 className="btn btn-sm btn-error btn-outline shadow-sm hover:bg-red-500 hover:text-white"
                                                                 title="ปฏิเสธงาน"
                                                             >
-                                                                <FaTimes />
+                                                                <X className="w-4 h-4" />
                                                             </button>
                                                         </>
                                                     )}

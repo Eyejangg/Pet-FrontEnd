@@ -5,7 +5,7 @@ import BookingService from '../services/booking.service';
 import { format } from 'date-fns';
 import { Link } from 'react-router-dom';
 import Swal from 'sweetalert2';
-import { FaCalendarAlt, FaPaw, FaHistory, FaTrashAlt, FaSearch } from 'react-icons/fa';
+import { Calendar, PawPrint, History, Trash2, Search } from 'lucide-react';
 
 import { th } from 'date-fns/locale';
 
@@ -103,7 +103,7 @@ const MyHistory = () => {
                 <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4 border-b border-gray-100 pb-6">
                     <div>
                         <div className="inline-block p-2 bg-purple-100 rounded-lg text-purple-600 text-xl mb-2">
-                            <FaHistory />
+                            <History className="w-6 h-6" />
                         </div>
                         <h2 className="text-3xl font-extrabold text-gray-800">ประวัติการจอง</h2>
                         <p className="text-gray-500">ติดตามสถานะการจองบริการของคุณ</p>
@@ -127,7 +127,7 @@ const MyHistory = () => {
 
                 {!bookings.length ? (
                     <div className="text-center py-20 bg-gray-50 rounded-3xl border border-dashed border-gray-200">
-                        <FaCalendarAlt className="mx-auto text-6xl text-gray-300 mb-4" />
+                        <Calendar className="mx-auto text-6xl text-gray-300 mb-4" />
                         <p className="text-xl font-bold text-gray-400">ยังไม่มีประวัติการจอง</p>
                         <Link to="/" className="btn btn-primary bg-pink-500 border-none mt-6 rounded-xl shadow-lg hover:bg-pink-600">
                             เริ่มจองบริการครั้งแรก
@@ -169,7 +169,7 @@ const MyHistory = () => {
                                         {/* Pet Info */}
                                         <td className="font-medium text-gray-600">
                                             <div className="flex items-center gap-2">
-                                                <FaPaw className="text-gray-300" />
+                                                <PawPrint className="w-4 h-4 text-gray-300" />
                                                 {booking.petName}
                                             </div>
                                         </td>
@@ -193,7 +193,7 @@ const MyHistory = () => {
                                                     onClick={() => handleCancel(booking._id)}
                                                     className="btn btn-sm btn-ghost text-red-400 hover:bg-red-50 hover:text-red-500 rounded-lg group"
                                                 >
-                                                    <FaTrashAlt className="group-hover:scale-110 transition-transform" />
+                                                    <Trash2 className="w-4 h-4 group-hover:scale-110 transition-transform" />
                                                     <span className="hidden sm:inline">ยกเลิก</span>
                                                 </button>
                                             )}

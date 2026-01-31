@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { FaMapMarkerAlt, FaTag, FaTrash, FaUserCircle, FaPen } from 'react-icons/fa';
+import { MapPin, Tag, Trash2, User, Edit } from 'lucide-react';
 import { useAuth } from '../services/useAuth';
 import PostService from '../services/post.service';
 import Swal from 'sweetalert2';
@@ -63,27 +63,32 @@ const ServiceCard = ({ service, refreshServices }) => {
 
                 {/* Tags */}
                 <div className="flex flex-wrap gap-2">
-                    {service.serviceTypes && service.serviceTypes.length > 0 ? (
-                        service.serviceTypes.slice(0, 3).map((type, index) => (
+                    {(() => {
+                        // Translation Map
+                        const typeMapping = {
+                            'Pet Boarding': 'รับฝากเลี้ยงน้อง',
+                            'Pet Sitting': 'พี่เลี้ยงสัตว์',
+                            'Dog Walking': 'พาสุนัขเดินเล่น',
+                            'Grooming': 'อาบน้ำตัดขน',
+                            'Training': 'ฝึกสุนัข'
+                        };
+
+                        const tags = service.serviceTypes && service.serviceTypes.length > 0
+                            ? service.serviceTypes
+                            : (service.category ? [service.category] : []);
+
+                        return service.serviceTypes.slice(0, 3).map((type, index) => (
                             <div key={index} className="badge badge-ghost badge-sm gap-1 text-xs text-indigo-600 font-medium">
-                                <FaTag className="text-[10px]" /> {type}
+                                <Tag className="w-3 h-3" /> {typeMapping[type] || type}
                             </div>
-                        ))
-                    ) : (
-                        <div className="badge badge-ghost badge-sm gap-1 text-xs text-indigo-600 font-medium">
-                            <FaTag className="text-[10px]" /> {service.category}
-                        </div>
-                    )}
-                    {/* Show +N if more than 3 tags */}
-                    {service.serviceTypes && service.serviceTypes.length > 3 && (
-                        <div className="badge badge-ghost badge-sm text-xs">+{service.serviceTypes.length - 3}</div>
-                    )}
+                        ));
+                    })()}
                 </div>
 
                 {/* Location */}
                 {service.location && (
                     <div className="flex items-center gap-1 text-rose-500 text-sm font-medium">
-                        <FaMapMarkerAlt />
+                        <MapPin className="w-4 h-4" />
                         <span>{service.location}</span>
                     </div>
                 )}
@@ -95,7 +100,7 @@ const ServiceCard = ({ service, refreshServices }) => {
 
                 {/* Poster Info */}
                 <div className="flex items-center gap-2 mt-1 pt-3 border-t border-base-200">
-                    <FaUserCircle className="text-2xl text-gray-300" />
+                    <User className="w-6 h-6 text-gray-300" />
                     <span className="text-sm text-gray-400 font-medium">
                         User: <span className="text-gray-600">{service.providerId?.username || 'ไม่ระบุ'}</span>
                     </span>
@@ -109,13 +114,13 @@ const ServiceCard = ({ service, refreshServices }) => {
                                 to={`/edit-service/${service._id}`}
                                 className="btn btn-ghost btn-sm text-amber-500 hover:bg-amber-50 flex-1 font-normal"
                             >
-                                <FaPen className="text-xs" /> แก้ไข
+                                <Edit className="w-4 h-4" /> แก้ไข
                             </Link>
                             <button
                                 onClick={handleDelete}
                                 className="btn btn-ghost btn-sm text-red-500 hover:bg-red-50 flex-1 font-normal"
                             >
-                                <FaTrash className="text-xs" /> ลบ
+                                <Trash2 className="w-4 h-4" /> ลบ
                             </button>
                         </div>
                     ) : (

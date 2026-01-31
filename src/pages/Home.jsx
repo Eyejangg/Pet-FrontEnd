@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import ServiceCard from '../components/ServiceCard';
 import PostService from '../services/post.service';
-import { FaPaw } from 'react-icons/fa';
+import { PawPrint } from 'lucide-react';
 
 const Home = () => {
     const [services, setServices] = useState([]);
@@ -31,7 +31,14 @@ const Home = () => {
             setServices(data);
             setFilteredServices(data);
         } catch (error) {
-            console.error("Error fetching services:", error);
+            // ถ้าเป็น 404 (ไม่พบข้อมูล) ให้ถือว่าเป็นเรื่องปกติ (คือยังไม่มี Service)
+            if (error.response && error.response.status === 404) {
+                setServices([]);
+                setFilteredServices([]);
+            } else {
+                // ถ้าเป็น Error อื่นๆ ค่อยแสดงสีแดง
+                console.error("Error fetching services:", error);
+            }
         } finally {
             setLoading(false);
         }
@@ -89,7 +96,8 @@ const Home = () => {
                     {/* Sub-headline */}
                     <p className="text-lg text-gray-500 mb-8 max-w-2xl mx-auto font-medium">
                         ยินดีต้อนรับสู่ <span className="text-primary font-bold"> PetHub </span>
-                        แหล่งรวมพี่เลี้ยงสัตว์มืออาชีพ บริการฝากเลี้ยง พาสุนัขเดินเล่น และอาบน้ำตัดขน ใกล้บ้านคุณ
+                        แหล่งรวมพี่เลี้ยงสัตว์มืออาชีพ บริการฝากเลี้ยง  พาสุนัขเดินเล่น 
+                            และอาบน้ำตัดขน  ฝึกสุนัขกับพี่เลี้ยงสัตว์มืออาชีพ
                     </p>
 
 
@@ -126,7 +134,7 @@ const Home = () => {
                 {/* Service Grid */}
                 {filteredServices.length === 0 ? (
                     <div className="text-center py-20 bg-gray-50 rounded-3xl border border-dashed border-gray-200">
-                        <FaPaw className="mx-auto text-6xl text-gray-200 mb-4" />
+                        <PawPrint className="mx-auto text-6xl text-gray-200 mb-4" />
                         <p className="text-xl text-gray-400 font-medium">No services found.</p>
                         <p className="mt-2 text-gray-400">Try changing your filters or search terms.</p>
                     </div>

@@ -7,27 +7,7 @@ import MyHistory from "../pages/MyHistory";
 import ManageBookings from "../pages/ManageBookings";
 import CreateService from "../pages/CreateService";
 import EditService from "../pages/EditService";
-import Layout from "../components/Layout"; // We will create this
-import { Navigate } from "react-router-dom";
-import { useAuth } from "../services/useAuth";
-
-// Wrapper to check authentication for protected routes
-const ProtectedRoute = ({ children }) => {
-    const { user } = useAuth();
-    if (!user) {
-        return <Navigate to="/login" replace />;
-    }
-    return children;
-};
-
-// Wrapper to redirect if already logged in
-const PublicRoute = ({ children }) => {
-    const { user } = useAuth();
-    if (user) {
-        return <Navigate to="/" replace />;
-    }
-    return children;
-}
+import Layout from "../components/Layout"; 
 
 const router = createBrowserRouter([
     {
@@ -35,13 +15,13 @@ const router = createBrowserRouter([
         element: <Layout />,
         children: [
             { path: "", element: <Home /> },
-            { path: "login", element: <PublicRoute><Login /></PublicRoute> },
-            { path: "register", element: <PublicRoute><Register /></PublicRoute> },
-            { path: "book/:id", element: <ProtectedRoute><BookingForm /></ProtectedRoute> },
-            { path: "my-history", element: <ProtectedRoute><MyHistory /></ProtectedRoute> },
-            { path: "manage-bookings", element: <ProtectedRoute><ManageBookings /></ProtectedRoute> },
-            { path: "create-service", element: <ProtectedRoute><CreateService /></ProtectedRoute> },
-            { path: "edit-service/:id", element: <ProtectedRoute><EditService /></ProtectedRoute> },
+            { path: "login", element: <Login /> },
+            { path: "register", element: <Register /> },
+            { path: "book/:id", element: <BookingForm /> },
+            { path: "my-history", element: <MyHistory /> },
+            { path: "manage-bookings", element: <ManageBookings /> },
+            { path: "create-service", element: <CreateService /> },
+            { path: "edit-service/:id", element: <EditService /> },
         ],
     },
 ]);

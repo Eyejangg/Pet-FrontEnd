@@ -4,7 +4,7 @@ import Swal from 'sweetalert2';
 import { useAuth } from '../services/useAuth';
 import PostService from '../services/post.service';
 import BookingService from '../services/booking.service';
-import { FaPaw, FaWeight, FaCalendarAlt, FaStickyNote, FaCheckCircle, FaDog, FaCat, FaQuestionCircle } from 'react-icons/fa';
+import { PawPrint, Scale, Calendar, StickyNote, CheckCircle, Dog, Cat, HelpCircle } from 'lucide-react';
 
 const BookingForm = () => {
     const { id: serviceId } = useParams();
@@ -22,7 +22,7 @@ const BookingForm = () => {
     const [unavailableDates, setUnavailableDates] = useState([]);
     const [loading, setLoading] = useState(false);
 
-    // Fetch Service Details for Context
+    // ดึงข้อมูลบริการ ที่เป็น PostService.getByID 
     useEffect(() => {
         const fetchService = async () => {
             try {
@@ -35,12 +35,13 @@ const BookingForm = () => {
         fetchService();
     }, [serviceId]);
 
+    // ดึงวันที่ไม่ว่าง ไปถาม Server ก่อนนะ ว่าวันนี้มีใครจองแล้วบ้างมั้ย
     useEffect(() => {
         const fetchAvailability = async () => {
             try {
-                const { data } = await BookingService.getBookingAvailability(serviceId);
-                const dates = data.map(date => new Date(date).toISOString().split('T')[0]);
-                setUnavailableDates(dates);
+                const { data } = await BookingService.getBookingAvailability(serviceId); // ดึงวันที่ไม่ว่าง
+                const dates = data.map(date => new Date(date).toISOString().split('T')[0]); // แปลงวัน ที่
+                setUnavailableDates(dates); // ตั้งค่าวันที่ไม่ว่าง เพื่อไม่ให้ลูกค้าเลือกวันที่ไม่ว่าง
             } catch (error) {
                 console.error("Error fetching availability:", error);
             }
@@ -94,17 +95,17 @@ const BookingForm = () => {
     };
 
     const handleDateChange = (e) => {
-        const selected = e.target.value;
-        if (unavailableDates.includes(selected)) {
-            Swal.fire({
+        const selected = e.target.value; // ถ้าเกิดวันที่ลูกค้าเลือก ไปตรงกับวันที่ไม่ว่าง    
+        if (unavailableDates.includes(selected)) { // ถ้ามีวันที่ไม่ว่าง
+            Swal.fire({     // เด้ง Pop-up
                 icon: 'error',
                 title: 'วันที่นี้ไม่ว่าง',
                 text: 'ขออภัย วันที่นี้มีการจองเต็มแล้ว',
                 confirmButtonColor: '#ec4899'
             });
-            setFormData({ ...formData, bookingDate: '' });
+            setFormData({ ...formData, bookingDate: '' }); // ล้างวันที่
         } else {
-            setFormData({ ...formData, bookingDate: selected });
+            setFormData({ ...formData, bookingDate: selected }); // ตั้งวันที่ใหม่
         }
     };
 
@@ -138,7 +139,7 @@ const BookingForm = () => {
                     <div className="bg-white rounded-3xl shadow-xl overflow-hidden p-8">
                         <div className="text-center mb-8">
                             <div className="inline-block p-3 bg-pink-100 rounded-full text-pink-500 text-2xl mb-3">
-                                <FaCalendarAlt />
+                                <Calendar className="w-8 h-8" />
                             </div>
                             <h2 className="text-3xl font-extrabold text-gray-800">กรอกข้อมูลการจอง</h2>
                             <p className="text-gray-500">ใส่รายละเอียดเกี่ยวกับสัตว์เลี้ยงของคุณ</p>
@@ -153,7 +154,7 @@ const BookingForm = () => {
                                 </label>
                                 <div className="relative">
                                     <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
-                                        <FaPaw />
+                                        <PawPrint className="w-5 h-5" />
                                     </span>
                                     <input
                                         type="text"
@@ -179,21 +180,21 @@ const BookingForm = () => {
                                             className={`join-item btn btn-sm flex-1 ${formData.petType === 'Dog' ? 'btn-primary bg-pink-500 border-pink-500 text-white shadow-md' : 'btn-ghost text-gray-500'}`}
                                             onClick={() => setFormData({ ...formData, petType: 'Dog' })}
                                         >
-                                            <FaDog className="mr-1" /> สุนัข
+                                            <Dog className="mr-1 w-4 h-4" /> สุนัข
                                         </button>
                                         <button
                                             type="button"
                                             className={`join-item btn btn-sm flex-1 ${formData.petType === 'Cat' ? 'btn-primary bg-pink-500 border-pink-500 text-white shadow-md' : 'btn-ghost text-gray-500'}`}
                                             onClick={() => setFormData({ ...formData, petType: 'Cat' })}
                                         >
-                                            <FaCat className="mr-1" /> แมว
+                                            <Cat className="mr-1 w-4 h-4" /> แมว
                                         </button>
                                         <button
                                             type="button"
                                             className={`join-item btn btn-sm flex-1 ${formData.petType === 'Other' ? 'btn-primary bg-pink-500 border-pink-500 text-white shadow-md' : 'btn-ghost text-gray-500'}`}
                                             onClick={() => setFormData({ ...formData, petType: 'Other' })}
                                         >
-                                            <FaQuestionCircle className="mr-1" /> อื่นๆ
+                                            <HelpCircle className="mr-1 w-4 h-4" /> อื่นๆ
                                         </button>
                                     </div>
                                 </div>
@@ -205,7 +206,7 @@ const BookingForm = () => {
                                     </label>
                                     <div className="relative">
                                         <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
-                                            <FaWeight />
+                                            <Scale className="w-5 h-5" />
                                         </span>
                                         <input
                                             type="number"
@@ -244,7 +245,7 @@ const BookingForm = () => {
                                 </label>
                                 <div className="relative">
                                     <span className="absolute top-3 left-3 text-gray-400">
-                                        <FaStickyNote />
+                                        <StickyNote className="w-5 h-5" />
                                     </span>
                                     <textarea
                                         name="specialNotes"
@@ -264,7 +265,7 @@ const BookingForm = () => {
                             >
                                 {loading ? <span className="loading loading-spinner"></span> : (
                                     <>
-                                        ยืนยันการจอง <FaCheckCircle className="ml-2" />
+                                        ยืนยันการจอง <CheckCircle className="ml-2 w-5 h-5" />
                                     </>
                                 )}
                             </button>

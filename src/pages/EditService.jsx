@@ -3,7 +3,7 @@ import Swal from 'sweetalert2';
 import { useAuth } from '../services/useAuth';
 import PostService from '../services/post.service';
 import { useNavigate, useParams } from 'react-router-dom';
-import { FaPen, FaDollarSign, FaMapMarkerAlt, FaImage, FaCloudUploadAlt, FaFileAlt, FaCheck } from 'react-icons/fa';
+import { PenLine, DollarSign, MapPin, Image, CloudUpload, FileText, Check } from 'lucide-react';
 
 const EditService = () => {
     const { id } = useParams();
@@ -160,7 +160,7 @@ const EditService = () => {
                             </label>
                             <div className="relative">
                                 <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
-                                    <FaFileAlt />
+                                    <FileText className="w-5 h-5" />
                                 </span>
                                 <input
                                     type="text"
@@ -197,7 +197,7 @@ const EditService = () => {
                                 </label>
                                 <div className="relative">
                                     <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
-                                        <FaDollarSign />
+                                        <DollarSign className="w-5 h-5" />
                                     </span>
                                     <input
                                         type="number"
@@ -218,7 +218,7 @@ const EditService = () => {
                                 </label>
                                 <div className="relative">
                                     <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
-                                        <FaImage />
+                                        <Image className="w-5 h-5" />
                                     </span>
                                     {/* Using file input but styled to look consistent */}
                                     <input
@@ -238,7 +238,7 @@ const EditService = () => {
                             </label>
                             <div className="relative">
                                 <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
-                                    <FaMapMarkerAlt />
+                                    <MapPin className="w-5 h-5" />
                                 </span>
                                 <input
                                     type="text"
@@ -270,7 +270,7 @@ const EditService = () => {
                                                 : 'bg-white hover:bg-gray-50 text-gray-600 border-gray-200 hover:border-rose-300'
                                                 }`}
                                         >
-                                            {isSelected && <FaCheck className="mr-1 text-xs" />}
+                                            {isSelected && <Check className="mr-1 w-3 h-3" />}
                                             {serviceLabels[service] || service}
                                         </button>
                                     );
@@ -292,7 +292,7 @@ const EditService = () => {
                                     />
                                 ) : (
                                     <div className="text-gray-300 flex flex-col items-center">
-                                        <FaImage className="text-3xl mb-2" />
+                                        <Image className="w-8 h-8 mb-2" />
                                         <span className="text-sm">No image selected</span>
                                     </div>
                                 )}
@@ -304,7 +304,7 @@ const EditService = () => {
                             type="submit"
                             className={`btn btn-block border-none bg-gradient-to-r from-rose-400 to-pink-500 hover:from-rose-500 hover:to-pink-600 text-white rounded-2xl shadow-lg text-lg h-12 mt-4 ${submitting ? 'loading' : ''}`}
                         >
-                            <FaCloudUploadAlt className="mr-2 text-xl" /> Update Service
+                            <CloudUpload className="mr-2 w-5 h-5" /> Update Service
                         </button>
                     </form>
                 </div>

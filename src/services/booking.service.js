@@ -1,27 +1,29 @@
 import api from "./api";
 
+const BOOKING_URL = import.meta.env.VITE_BOOKING_URL;
+
 const createBooking = async (bookingData) => {
-    return await api.post("/bookings", bookingData);
+    return await api.post(BOOKING_URL, bookingData);
 };
 
 const getBookingsByProvider = async () => {
-    return await api.get("/bookings/provider-bookings");
+    return await api.get(`${BOOKING_URL}/provider-bookings`);
 };
 
 const getBookingsByUser = async () => {
-    return await api.get("/bookings/my-bookings");
+    return await api.get(`${BOOKING_URL}/my-bookings`);
 };
 
 const getBookingAvailability = async (serviceId) => {
-    return await api.get(`/bookings/service/${serviceId}/availability`);
+    return await api.get(`${BOOKING_URL}/service/${serviceId}/availability`);
 };
 
 const updateBookingStatus = async (id, status) => {
-    return await api.put(`/bookings/${id}/status`, { status });
+    return await api.put(`${BOOKING_URL}/${id}/status`, { status });
 };
 
 const cancelBooking = async (id) => {
-    return await api.put(`/bookings/${id}/cancel`);
+    return await api.put(`${BOOKING_URL}/${id}/cancel`);
 };
 
 const BookingService = {

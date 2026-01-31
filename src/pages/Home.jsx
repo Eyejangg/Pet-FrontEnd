@@ -1,18 +1,44 @@
 import { useState, useEffect } from 'react';
-import axios from 'axios';
-import { Link } from 'react-router-dom';
+
+import { Link, useSearchParams } from 'react-router-dom';
 import ServiceCard from '../components/ServiceCard';
+import PostService from '../services/post.service';
+import { PawPrint } from 'lucide-react';
 
 const Home = () => {
     const [services, setServices] = useState([]);
+    const [filteredServices, setFilteredServices] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [activeFilter, setActiveFilter] = useState('All');
+    const [searchParams] = useSearchParams();
+
+
+    const searchQuery = searchParams.get('search') || '';
+
+    const filters = ['All', 'Pet Boarding', 'Pet Sitting', 'Dog Walking', 'Grooming', 'Training'];
+    const filterLabels = {
+        'All': 'ทั้งหมด',
+        'Pet Boarding': 'รับฝากเลี้ยง',
+        'Pet Sitting': 'พี่เลี้ยงสัตว์',
+        'Dog Walking': 'พาสุนัขเดินเล่น',
+        'Grooming': 'อาบน้ำตัดขน',
+        'Training': 'ฝึกสุนัข'
+    };
 
     const fetchServices = async () => {
         try {
-            const { data } = await axios.get('http://localhost:5000/api/services');
+            const { data } = await PostService.getAllPosts();
             setServices(data);
+            setFilteredServices(data);
         } catch (error) {
-            console.error("Error fetching services:", error);
+            // ถ้าเป็น 404 (ไม่พบข้อมูล) ให้ถือว่าเป็นเรื่องปกติ (คือยังไม่มี Service)
+            if (error.response && error.response.status === 404) {
+                setServices([]);
+                setFilteredServices([]);
+            } else {
+                // ถ้าเป็น Error อื่นๆ ค่อยแสดงสีแดง
+                console.error("Error fetching services:", error);
+            }
         } finally {
             setLoading(false);
         }
@@ -21,6 +47,29 @@ const Home = () => {
     useEffect(() => {
         fetchServices();
     }, []);
+
+    // Filter Logic
+    useEffect(() => {
+        let result = services;
+
+        // Filter by Category
+        if (activeFilter !== 'All') {
+            result = result.filter(service =>
+                service.serviceTypes?.includes(activeFilter) || service.category === activeFilter
+            );
+        }
+
+        // Filter by Search Query (from URL)
+        if (searchQuery) {
+            const lowerQuery = searchQuery.toLowerCase();
+            result = result.filter(service =>
+                service.title.toLowerCase().includes(lowerQuery) ||
+                service.location.toLowerCase().includes(lowerQuery)
+            );
+        }
+
+        setFilteredServices(result);
+    }, [activeFilter, searchQuery, services]);
 
     if (loading) {
         return (
@@ -31,28 +80,76 @@ const Home = () => {
     }
 
     return (
-        <div className="container mx-auto px-4 py-8">
-            <div className="text-center mb-10">
-                <h1 className="text-4xl font-extrabold text-primary mb-4">ยินดีต้อนรับสู่ Meaw Meaw</h1>
-                <p className="text-lg text-gray-600">หาคนดูแลสัตว์เลี้ยงที่ไว้ใจได้ หรือ <Link to="/create-service" className="link link-primary">สมัครเป็นผู้ดูแล!</Link></p>
+        <div className="min-h-screen bg-base-100 font-sans pb-20">
+            {/* 1. Hero Section */}
+            <div className="bg-gradient-to-b from-purple-50 to-white pt-16 pb-12 rounded-b-[3rem] shadow-sm mb-10">
+                <div className="container mx-auto px-4 text-center">
+
+                    {/* Main Headline */}
+                    <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-800 mb-4 leading-tight">
+                        ดูแลสัตว์เลี้ยงแสนรัก <br className="md:hidden" />
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-600 to-pink-500">
+                            ด้วยใจที่คุณวางใจได้
+                        </span>
+                    </h1>
+
+                    {/* Sub-headline */}
+                    <p className="text-lg text-gray-500 mb-8 max-w-2xl mx-auto font-medium">
+                        ยินดีต้อนรับสู่ <span className="text-primary font-bold"> PetHub </span>
+                        แหล่งรวมพี่เลี้ยงสัตว์มืออาชีพ บริการฝากเลี้ยง  พาสุนัขเดินเล่น 
+                            และอาบน้ำตัดขน  ฝึกสุนัขกับพี่เลี้ยงสัตว์มืออาชีพ
+                    </p>
+
+
+
+                </div>
             </div>
 
-            {services.length === 0 ? (
-                <div className="text-center py-10 bg-base-200 rounded-xl">
-                    <p className="text-xl text-gray-500">ยังไม่มีบริการในขณะนี้</p>
-                    <p className="mt-2">เป็นคนแรกที่ <Link to="/create-service" className="link link-primary">สร้างโพสต์บริการ!</Link></p>
-                </div>
-            ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                    {services.map((service) => (
-                        <ServiceCard
-                            key={service._id}
-                            service={service}
-                            refreshServices={fetchServices} // Pass refresh function
-                        />
+            {/* 2. Filter Section & Content */}
+            <div className="container mx-auto px-4">
+
+                {/* Filter Section (Pill Buttons) */}
+                <div className="flex overflow-x-auto gap-3 pb-4 mb-4 justify-start md:justify-center scrollbar-hide">
+                    {filters.map((filter) => (
+                        <button
+                            key={filter}
+                            onClick={() => setActiveFilter(filter)}
+                            className={`btn btn-sm rounded-full border-none px-6 font-medium transition-all whitespace-nowrap ${activeFilter === filter
+                                ? 'bg-gradient-to-r from-pink-500 to-rose-500 text-white shadow-md'
+                                : 'bg-gray-100 text-gray-500 hover:bg-gray-200'
+                                }`}
+                        >
+                            {filterLabels[filter]}
+                        </button>
                     ))}
                 </div>
-            )}
+
+                {/* Section Title */}
+                <div className="flex justify-between items-end mb-6 border-b border-gray-100 pb-4">
+                    <h2 className="text-2xl font-bold text-gray-800">
+                        บริการยอดนิยม
+                    </h2>
+                </div>
+
+                {/* Service Grid */}
+                {filteredServices.length === 0 ? (
+                    <div className="text-center py-20 bg-gray-50 rounded-3xl border border-dashed border-gray-200">
+                        <PawPrint className="mx-auto text-6xl text-gray-200 mb-4" />
+                        <p className="text-xl text-gray-400 font-medium">No services found.</p>
+                        <p className="mt-2 text-gray-400">Try changing your filters or search terms.</p>
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {filteredServices.map((service) => (
+                            <ServiceCard
+                                key={service._id}
+                                service={service}
+                                refreshServices={fetchServices}
+                            />
+                        ))}
+                    </div>
+                )}
+            </div>
         </div>
     );
 };

@@ -1,18 +1,18 @@
 import api from "./api";
 
-const API_URL = import.meta.env.VITE_POST_URL;
+const POST_URL = import.meta.env.VITE_POST_URL;
 
 const getAllPosts = async () => {
-    return await api.get(API_URL);
+    return await api.get(POST_URL);
 };
 
-// Renamed from getServiceById to getById to match Professor's pattern
+
 const getById = async (id) => {
-    return await api.get(API_URL + "/" + id);
+    return await api.get(`${POST_URL}/${id}`);
 };
 
 const createPost = async (postData) => {
-    return await api.post(API_URL, postData, {
+    return await api.post(POST_URL, postData, {
         headers: {
             "Content-Type": "multipart/form-data",
         },
@@ -20,7 +20,7 @@ const createPost = async (postData) => {
 };
 
 const updatePost = async (id, postData) => {
-    return await api.put(`${API_URL}/${id}`, postData, {
+    return await api.put(`${POST_URL}/${id}`, postData, {
         headers: {
             "Content-Type": "multipart/form-data",
         }
@@ -28,7 +28,7 @@ const updatePost = async (id, postData) => {
 };
 
 const deletePost = async (id) => {
-    return await api.delete(`${API_URL}/${id}`);
+    return await api.delete(`${POST_URL}/${id}`);
 };
 
 const PostService = {

@@ -7,7 +7,7 @@ import MyHistory from "../pages/MyHistory";
 import ManageBookings from "../pages/ManageBookings";
 import CreateService from "../pages/CreateService";
 import EditService from "../pages/EditService";
-import Layout from "../components/Layout"; 
+import Layout from "../components/Layout";
 
 const router = createBrowserRouter([
     {
@@ -23,7 +23,9 @@ const router = createBrowserRouter([
             { path: "create-service", element: <CreateService /> },
             { path: "edit-service/:id", element: <EditService /> },
         ],
-    },
-]);
+    }
+], {
+    basename: import.meta.env.BASE_URL
+});
 
 export default router;
